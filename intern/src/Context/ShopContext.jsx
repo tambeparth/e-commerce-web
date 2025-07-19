@@ -17,7 +17,13 @@ const ShopContextProvider = (props) => {
     useEffect(() => {
         fetch('http://localhost:3000/allproducts')
             .then((response) => response.json())
-            .then((data) => setAll_product(data))
+            .then((data) => {
+                console.log("Fetched products:", data);
+                setAll_product(data);
+            })
+            .catch((error) => {
+                console.error("Error fetching products:", error);
+            });
 
         if (localStorage.getItem('auth-token')) {
             fetch('http://localhost:3000/getcart', {

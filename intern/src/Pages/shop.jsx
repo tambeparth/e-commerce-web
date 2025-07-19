@@ -26,8 +26,14 @@ const Shop = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleSearch = async (query, filters) => {
-        if (!query.trim() && !filters.category && !filters.minPrice && !filters.maxPrice) {
+    const handleSearch = async (query, filters = {}) => {
+        // Special case: if explicitly browsing all products
+        if (query === '' && filters.category === 'all') {
+            setIsSearching(true);
+            setLoading(true);
+        }
+        // If no search criteria, reset to normal view
+        else if (!query.trim() && (!filters.category || filters.category === 'all') && !filters.minPrice && !filters.maxPrice) {
             setIsSearching(false);
             setSearchResults([]);
             return;
@@ -111,16 +117,24 @@ const Shop = () => {
                             <div className="no-results">
                                 <h3>No products found</h3>
                                 <p>Try adjusting your search terms or filters</p>
-                                <button
-                                    onClick={() => {
-                                        setIsSearching(false);
-                                        setSearchResults([]);
-                                        window.history.pushState({}, '', '/');
-                                    }}
-                                    className="back-to-shop-btn"
-                                >
-                                    Back to Shop
-                                </button>
+                                <div className="no-results-actions">
+                                    <button
+                                        onClick={() => handleSearch('', { category: 'all', sortBy: 'newest' })}
+                                        className="browse-all-btn"
+                                    >
+                                        Browse All Products
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setIsSearching(false);
+                                            setSearchResults([]);
+                                            window.history.pushState({}, '', '/');
+                                        }}
+                                        className="back-to-shop-btn"
+                                    >
+                                        Back to Shop
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>

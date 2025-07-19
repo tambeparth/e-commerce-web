@@ -21,7 +21,13 @@ const SearchBar = ({ onSearch, onFilter, showFilters = true }) => {
     }, [searchQuery, filters, onSearch]);
 
     const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
+        const value = e.target.value;
+        setSearchQuery(value);
+
+        // If search is cleared, reset to normal view
+        if (!value.trim()) {
+            onSearch('', filters);
+        }
     };
 
     const clearSearch = () => {

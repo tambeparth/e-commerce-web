@@ -234,7 +234,8 @@ app.get('/search', async (req, res) => {
         const { query, category, minPrice, maxPrice, sortBy } = req.query;
         let filter = {};
 
-        if (query) {
+        // If there's a search query, add text search
+        if (query && query.trim()) {
             filter.$or = [
                 { name: { $regex: query, $options: 'i' } },
                 { description: { $regex: query, $options: 'i' } },
@@ -242,10 +243,12 @@ app.get('/search', async (req, res) => {
             ];
         }
 
+        // Category filter
         if (category && category !== 'all') {
             filter.category = category;
         }
 
+        // Price range filter
         if (minPrice || maxPrice) {
             filter.new_price = {};
             if (minPrice) filter.new_price.$gte = Number(minPrice);
@@ -269,9 +272,13 @@ app.get('/search', async (req, res) => {
                 case 'newest':
                     products.sort((a, b) => new Date(b.date) - new Date(a.date));
                     break;
+                default:
+                    // Default sort by newest
+                    products.sort((a, b) => new Date(b.date) - new Date(a.date));
             }
         }
 
+        console.log(`Search query: "${query}", filters: ${JSON.stringify({ category, minPrice, maxPrice, sortBy })}, results: ${products.length}`);
         res.send(products);
     } catch (error) {
         console.error(error);
@@ -444,9 +451,139 @@ app.post('/addreview', fetchUser, async (req, res) => {
     }
 });
 
+// Initialize sample data
+const initializeSampleData = async () => {
+    try {
+        const existingProducts = await Product.find({});
+        if (existingProducts.length === 0) {
+            console.log("Adding sample products...");
+
+            const sampleProducts = [
+                {
+                    id: 1,
+                    name: "Striped Flutter Sleeve Overlap Collar Peplum Hem Blouse",
+                    image: "https://via.placeholder.com/300x400/ff4141/ffffff?text=Product+1",
+                    category: "women",
+                    new_price: 50,
+                    old_price: 80,
+                    description: "Beautiful striped blouse perfect for casual and formal occasions",
+                    rating: 4.5,
+                    tags: ["blouse", "women", "striped", "casual"],
+                    sizes: ["S", "M", "L", "XL"],
+                    colors: ["Red", "Blue", "White"]
+                },
+                {
+                    id: 2,
+                    name: "Men's Regular Fit Cotton Shirt",
+                    image: "https://via.placeholder.com/300x400/4169e1/ffffff?text=Product+2",
+                    category: "men",
+                    new_price: 45,
+                    old_price: 65,
+                    description: "Comfortable cotton shirt for everyday wear",
+                    rating: 4.2,
+                    tags: ["shirt", "men", "cotton", "regular"],
+                    sizes: ["S", "M", "L", "XL", "XXL"],
+                    colors: ["Blue", "White", "Black"]
+                },
+                {
+                    id: 3,
+                    name: "Kids Colorful T-Shirt",
+                    image: "https://via.placeholder.com/300x400/32cd32/ffffff?text=Product+3",
+                    category: "kid",
+                    new_price: 25,
+                    old_price: 35,
+                    description: "Fun and colorful t-shirt for kids",
+                    rating: 4.8,
+                    tags: ["t-shirt", "kids", "colorful", "fun"],
+                    sizes: ["XS", "S", "M", "L"],
+                    colors: ["Green", "Yellow", "Pink"]
+                },
+                {
+                    id: 4,
+                    name: "Women's Elegant Evening Dress",
+                    image: "https://via.placeholder.com/300x400/800080/ffffff?text=Product+4",
+                    category: "women",
+                    new_price: 120,
+                    old_price: 180,
+                    description: "Elegant dress perfect for evening events",
+                    rating: 4.7,
+                    tags: ["dress", "women", "elegant", "evening"],
+                    sizes: ["S", "M", "L"],
+                    colors: ["Purple", "Black", "Navy"]
+                },
+                {
+                    id: 5,
+                    name: "Men's Casual Jeans",
+                    image: "https://via.placeholder.com/300x400/4682b4/ffffff?text=Product+5",
+                    category: "men",
+                    new_price: 60,
+                    old_price: 90,
+                    description: "Comfortable casual jeans for everyday wear",
+                    rating: 4.3,
+                    tags: ["jeans", "men", "casual", "denim"],
+                    sizes: ["30", "32", "34", "36", "38"],
+                    colors: ["Blue", "Black", "Gray"]
+                },
+                {
+                    id: 6,
+                    name: "Kids Summer Shorts",
+                    image: "https://via.placeholder.com/300x400/ffa500/ffffff?text=Product+6",
+                    category: "kid",
+                    new_price: 20,
+                    old_price: 30,
+                    description: "Comfortable shorts for summer activities",
+                    rating: 4.4,
+                    tags: ["shorts", "kids", "summer", "comfortable"],
+                    sizes: ["XS", "S", "M"],
+                    colors: ["Orange", "Blue", "Green"]
+                },
+                {
+                    id: 7,
+                    name: "Women's Casual Sneakers",
+                    image: "https://via.placeholder.com/300x400/ff69b4/ffffff?text=Product+7",
+                    category: "women",
+                    new_price: 75,
+                    old_price: 100,
+                    description: "Stylish and comfortable sneakers for daily wear",
+                    rating: 4.6,
+                    tags: ["sneakers", "women", "casual", "comfortable"],
+                    sizes: ["6", "7", "8", "9", "10"],
+                    colors: ["Pink", "White", "Black"]
+                },
+                {
+                    id: 8,
+                    name: "Men's Formal Blazer",
+                    image: "https://via.placeholder.com/300x400/2f4f4f/ffffff?text=Product+8",
+                    category: "men",
+                    new_price: 150,
+                    old_price: 220,
+                    description: "Professional blazer for business occasions",
+                    rating: 4.5,
+                    tags: ["blazer", "men", "formal", "business"],
+                    sizes: ["S", "M", "L", "XL"],
+                    colors: ["Navy", "Black", "Gray"]
+                }
+            ];
+
+            for (const productData of sampleProducts) {
+                const product = new Product(productData);
+                await product.save();
+            }
+
+            console.log("Sample products added successfully!");
+        } else {
+            console.log("Products already exist in database");
+        }
+    } catch (error) {
+        console.error("Error initializing sample data:", error);
+    }
+};
+
 app.listen(port, (err) => {
     if (!err) {
         console.log("Server Running on Port " + port);
+        // Initialize sample data after server starts
+        initializeSampleData();
     } else {
         console.log("Error: " + err);
     }
