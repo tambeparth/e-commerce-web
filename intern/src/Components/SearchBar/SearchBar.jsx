@@ -13,11 +13,14 @@ const SearchBar = ({ onSearch, onFilter, showFilters = true }) => {
     });
 
     useEffect(() => {
-        const delayedSearch = setTimeout(() => {
-            onSearch(searchQuery, filters);
-        }, 300);
+        // Only trigger search if there's actually a search query or specific filters applied
+        if (searchQuery.trim() || filters.category !== 'all' || filters.minPrice || filters.maxPrice) {
+            const delayedSearch = setTimeout(() => {
+                onSearch(searchQuery, filters);
+            }, 300);
 
-        return () => clearTimeout(delayedSearch);
+            return () => clearTimeout(delayedSearch);
+        }
     }, [searchQuery, filters, onSearch]);
 
     const handleSearchChange = (e) => {
@@ -26,7 +29,7 @@ const SearchBar = ({ onSearch, onFilter, showFilters = true }) => {
 
         // If search is cleared, reset to normal view
         if (!value.trim()) {
-            onSearch('', filters);
+            onSearch('', { ...filters, category: 'all', minPrice: '', maxPrice: '' });
         }
     };
 

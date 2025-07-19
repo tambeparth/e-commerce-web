@@ -235,7 +235,7 @@ app.get('/search', async (req, res) => {
         let filter = {};
 
         // If there's a search query, add text search
-        if (query && query.trim()) {
+        if (query && query.trim() && query !== 'undefined') {
             filter.$or = [
                 { name: { $regex: query, $options: 'i' } },
                 { description: { $regex: query, $options: 'i' } },
@@ -278,7 +278,7 @@ app.get('/search', async (req, res) => {
             }
         }
 
-        console.log(`Search query: "${query}", filters: ${JSON.stringify({ category, minPrice, maxPrice, sortBy })}, results: ${products.length}`);
+        console.log(`Search query: "${query || 'none'}", filters: ${JSON.stringify({ category, minPrice, maxPrice, sortBy })}, results: ${products.length}`);
         res.send(products);
     } catch (error) {
         console.error(error);

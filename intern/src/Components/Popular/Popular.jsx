@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './Popular.css';
-// import initialPopularProducts from '../Asset/new_collections'
+
 import Item from '../Item/Item';
 
 const Popular = () => {

@@ -20,11 +20,11 @@ const Shop = () => {
         // Check if there's a search query in URL
         const urlParams = new URLSearchParams(window.location.search);
         const searchQuery = urlParams.get('search');
-        if (searchQuery) {
+        if (searchQuery && searchQuery.trim()) {
             handleSearch(searchQuery, {});
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, []); // handleSearch is intentionally excluded to prevent infinite loops
 
     const handleSearch = async (query, filters = {}) => {
         // Special case: if explicitly browsing all products
