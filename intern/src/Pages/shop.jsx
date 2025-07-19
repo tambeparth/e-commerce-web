@@ -50,7 +50,7 @@ const Shop = () => {
             if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
             if (filters.sortBy) params.append('sortBy', filters.sortBy);
 
-            const response = await fetch(`http://localhost:3000/search?${params}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:3000'}/search?${params}`);
             const data = await response.json();
             setSearchResults(data);
         } catch (error) {

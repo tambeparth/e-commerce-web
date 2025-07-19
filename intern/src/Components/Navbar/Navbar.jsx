@@ -25,6 +25,7 @@ const Navbar = () => {
         else if (path === '/womens') setMenu("Women");
         else if (path === '/kids') setMenu("Kids");
         else if (path === '/wishlist') setMenu("wishlist");
+        else if (path === '/portfolio') setMenu("Portfolio");
 
         // Load dark mode preference
         const savedDarkMode = localStorage.getItem('darkMode') === 'true';
